@@ -1,0 +1,97 @@
+﻿@model PizzaRestaurantDrink.ViewModels.HomeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- ================= BANNER SECTION ================= -->
+<!-- This div pushes the content down so it doesn't hide behind the navbar -->
+<section class="banner-1" style="background: url('/assets/images/background/banner-1.jpg'); padding-top: 150px; padding-bottom: 100px; background-size: cover;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1 class="text-center text-white">Delicious Pizza & Drinks</h1>
+                <p class="text-center text-white">Best food in town delivered to your doorstep.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= MENU SECTION ================= -->
+<section class="menu-2">
+    <div class="container" style="margin-top: 50px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-center">
+                    <h2>Our Menu</h2>
+                    <hr />
+                    <!-- Filter Buttons -->
+                    <button class="btn btn-danger filter-button active" data-filter="all">All</button>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <!-- We remove spaces from category names for CSS classes (e.g. "Soft Drinks" -> "SoftDrinks") -->
+                        <button class="btn btn-warning filter-button" data-filter="@cat.StockMenuCategory.Replace(" ", "")">
+                            @cat.StockMenuCategory
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <br />
+
+        <!-- Food Items -->
+        <div class="row">
+            @foreach (var item in Model.Items)
+            {
+                <!-- FILTER CLASS: We use the category name here -->
+                <div class="col-md-4 col-sm-6 pb-4 filter @item.StockMenuCategory.StockMenuCategory.Replace(" ", "")">
+                    <div class="box">
+                        <!-- IMAGE -->
+                        <!-- We check if the path starts with ~ or not to avoid double slashes -->
+                        @{
+                            var imgPath = item.StockItem.ItemPhotoPath;
+                            if (!string.IsNullOrEmpty(imgPath) && !imgPath.StartsWith("~/"))
+                            {
+                                imgPath = "~/images/" + imgPath;
+                            }
+                        }
+                        <img src="@Url.Content(imgPath)" class="img-fluid" style="height: 250px; width: 100%; object-fit: cover;" alt="Food Image">
+
+                        <div class="caption text-center">
+                            <!-- NAME -->
+                            <h4>@item.StockItem.StockItemTitle</h4>
+
+                            <!-- PRICE -->
+                            <h5 style="color: #e54c2a; font-weight: bold;">
+                                $@item.StockItem.UnitPrice
+                            </h5>
+
+                            <p>@item.StockItem.ItemSize</p>
+
+                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $(".filter-button").click(function(){
+                var value = $(this).attr('data-filter');
+                if(value == "all") {
+                    $('.filter').show('1000');
+                }
+                else {
+                    $(".filter").not('.'+value).hide('3000');
+                    $('.filter').filter('.'+value).show('3000');
+                }
+                $(".filter-button").removeClass("active");
+                $(this).addClass("active");
+            });
+        });
+    </script>
+}

@@ -1,0 +1,99 @@
+﻿@model PizzaRestaurantDrink.ViewModels.LoginMV
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<!-- ================= BREADCRUMB START ================= -->
+<div class="bread-crumb">
+    <div class="container">
+        <div class="matter">
+            <h2>Login</h2>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a asp-controller="Home" asp-action="Index">HOME</a></li>
+                <li class="list-inline-item"><a href="#">Login</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- ================= LOGIN SECTION START ================= -->
+<div class="login">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <!-- Title Section -->
+            <div class="col-sm-12 commontop text-center">
+                <h4>Login to your Account</h4>
+                <div class="divider style-1 center">
+                    <span class="hr-simple left"></span>
+                    <i class="icofont icofont-ui-press hr-icon"></i>
+                    <span class="hr-simple right"></span>
+                </div>
+            </div>
+
+            <div class="col-lg-10 col-md-12">
+                <div class="row">
+                    <!-- LEFT COLUMN: LOGIN FORM -->
+                    <div class="col-sm-12 col-md-6">
+                        <!-- Added min-height to prevent footer overlap -->
+                        <div class="loginnow" style="min-height: 500px;">
+                            <h5>Login</h5>
+                            <p>Don't have an account? <a asp-action="Register">Register Here</a></p>
+
+                            <form asp-action="Login" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <!-- Username Field -->
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-user"></i>
+                                    <input asp-for="UserName" class="form-control" placeholder="Username or Email" />
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+
+                                <!-- Password Field -->
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-lock"></i>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+
+                                <!-- Forgot Password Link -->
+                                <div class="form-group">
+                                    <div class="links">
+                                        <a asp-controller="UserRecovery" asp-action="AccountRecovery" class="float-right">Forgot Password?</a>
+                                    </div>
+                                </div>
+
+                                <!-- Login Button -->
+                                <div class="form-group">
+                                    <input type="submit" value="LOGIN" class="btn btn-theme btn-md btn-wide" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: SOCIAL / INFO -->
+                    <div class="col-sm-12 col-md-6">
+                        <div class="loginto loginnow" style="min-height: 500px;">
+                            <h5>Login via social accounts</h5>
+                            <ul class="list-unstyled text-center">
+                                <li><a href="#" target="_blank"><i class="icofont icofont-social-facebook"></i> Login with Facebook</a></li>
+                                <li><a href="#" target="_blank"><i class="icofont icofont-social-google-plus"></i> Login with Google+</a></li>
+                            </ul>
+                            <hr />
+                            <div class="text-center">
+                                <p>Create a new account and get started in minutes!</p>
+                                <a asp-action="Register" class="btn btn-theme btn-md">Create Account</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Login Section End -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

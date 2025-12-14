@@ -1,0 +1,11 @@
+# Visual Studio temporary files
+.vs/
+*.vspscc
+*/.vspscc
+
+# Binaries/Build output
+[Bb]in/
+[Oo]bj/
+*.log
+*.pdb
+*.suo

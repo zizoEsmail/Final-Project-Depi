@@ -1,0 +1,128 @@
+﻿@model PizzaRestaurantDrink.ViewModels.Reg_UserMV
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!-- ================= BREADCRUMB START ================= -->
+<div class="bread-crumb">
+    <div class="container">
+        <div class="matter">
+            <h2>Register</h2>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a asp-controller="Home" asp-action="Index">HOME</a></li>
+                <li class="list-inline-item"><a href="#">Register</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- ================= USER REGISTER START ================= -->
+<div class="login">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 commontop text-center">
+                <h4>Create an Account</h4>
+                <div class="divider style-1 center">
+                    <span class="hr-simple left"></span>
+                    <i class="icofont icofont-ui-press hr-icon"></i>
+                    <span class="hr-simple right"></span>
+                </div>
+            </div>
+
+            <div class="col-lg-10 col-md-12">
+                <div class="row">
+                    <!-- LEFT COLUMN: REGISTRATION FORM -->
+                    <div class="col-sm-12 col-md-6">
+                        <!-- FIX: Added min-height: 920px to push the footer down -->
+                        <div class="loginnow" style="min-height: 920px;">
+                            <h5>Register</h5>
+                            <p>Do You have an account? <a asp-action="Login">Login</a> and start in less than a minute</p>
+
+                            <form asp-action="Register" method="post" enctype="multipart/form-data">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-user"></i>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Enter First Name" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-user"></i>
+                                    <input asp-for="LastName" class="form-control" placeholder="Enter Last Name" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-user"></i>
+                                    <input asp-for="UserName" class="form-control" placeholder="Enter User Name" />
+                                    <span asp-validation-for="UserName" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-ui-message"></i>
+                                    <input asp-for="EmailAddress" type="email" class="form-control" placeholder="Enter Email Address" />
+                                    <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-lock"></i>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Enter Password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-lock"></i>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm Password" />
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-phone"></i>
+                                    <input asp-for="ContactNo" class="form-control" placeholder="Enter Contact No" />
+                                    <span asp-validation-for="ContactNo" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="icofont icofont-people"></i>
+                                    <select asp-for="GenderID" class="form-control" asp-items="ViewBag.GenderID">
+                                        <option value="">--Choose Gender--</option>
+                                    </select>
+                                    <span asp-validation-for="GenderID" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="links">
+                                        <label>
+                                            <input type="checkbox" class="checkbox-inline" /> By signing up I agree with <a href="#">terms & conditions.</a>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="submit" value="SIGN UP" class="btn btn-theme btn-md btn-wide" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: SOCIAL LOGIN -->
+                    <div class="col-sm-12 col-md-6">
+                        <div class="loginto loginnow">
+                            <h5>Login via social accounts</h5>
+                            <ul class="list-unstyled text-center">
+                                <li><a href="#" target="_blank"><i class="icofont icofont-social-facebook"></i> Login with Facebook</a></li>
+                                <li><a href="#" target="_blank"><i class="icofont icofont-social-google-plus"></i> Login with Google+</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- User Register End -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
