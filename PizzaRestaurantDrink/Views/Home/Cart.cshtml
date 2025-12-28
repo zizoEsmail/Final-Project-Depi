@@ -1,0 +1,167 @@
+﻿@model List<PizzaRestaurantDrink.ViewModels.CartItemViewModel>
+
+@{
+    ViewData["Title"] = "My Cart";
+    decimal grantTotal = 0;
+}
+
+<!-- ================= BREADCRUMB START ================= -->
+<div class="bread-crumb">
+    <div class="container">
+        <div class="matter">
+            <h2>My Cart</h2>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a asp-action="Index">HOME</a></li>
+                <li class="list-inline-item"><a href="#">Cart</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+<!-- ================= CART SECTION START ================= -->
+<div class="commontop">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+
+                <!-- Page Title / Divider -->
+                <div class="text-center">
+                    <h4>Review your Order</h4>
+                    <div class="divider style-1 center">
+                        <span class="hr-simple left"></span>
+                        <i class="icofont icofont-ui-press hr-icon"></i>
+                        <span class="hr-simple right"></span>
+                    </div>
+                </div>
+
+                <!-- Empty Cart Check -->
+                @if (Model == null || Model.Count == 0)
+                {
+                    <div class="text-center" style="padding: 50px;">
+                        <h5 class="text-muted">Your cart is currently empty.</h5>
+                        <br />
+                        <a asp-action="Index" class="btn btn-theme btn-md">Go to Menu</a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Cart Table -->
+                    <div class="table-responsive" style="margin-top: 30px; background-color: #fff; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                        <table class="table table-bordered table-hover">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th class="text-center">Image</th>
+                                    <th>Item Name</th>
+                                    <th>Price</th>
+                                    <th class="text-center" style="width: 150px;">Quantity</th>
+                                    <th>Total</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    grantTotal += item.TotalPrice;
+                                    // ADD ID to the row so we can remove it if qty is 0
+                                    <tr id="row-@item.StockMenuItemId">
+                                        <!-- Image -->
+                                        <td class="text-center" style="vertical-align: middle;">
+                                            @{
+                                                var imgPath = item.PhotoPath;
+                                                if (!string.IsNullOrEmpty(imgPath) && !imgPath.StartsWith("/")) { imgPath = "/" + imgPath; }
+                                            }
+                                            <img src="@Url.Content(imgPath)" width="70" height="70" style="object-fit:cover; border-radius: 5px;" />
+                                        </td>
+
+                                        <!-- Name -->
+                                        <td style="vertical-align: middle; font-weight: 600;">@item.ItemTitle</td>
+
+                                        <!-- Price -->
+                                        <td style="vertical-align: middle;">$@item.UnitPrice.ToString("0.00")</td>
+
+                                        <!-- Quantity Controls (AJAX) -->
+                                        <td style="vertical-align: middle;">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <!-- Changed to type="button" and added onclick event -->
+                                                    <button type="button" onclick="updateQty(@item.StockMenuItemId, -1)" class="btn btn-sm btn-outline-secondary">-</button>
+                                                </div>
+                                                <!-- Added ID to input to update value -->
+                                                <input type="text" id="qty-@item.StockMenuItemId" class="form-control text-center" value="@item.Quantity" readonly style="background-color: #fff;" />
+                                                <div class="input-group-append">
+                                                    <button type="button" onclick="updateQty(@item.StockMenuItemId, 1)" class="btn btn-sm btn-outline-secondary">+</button>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Total -->
+                                        <td style="vertical-align: middle; color: #e54c2a;">
+                                            $ <span id="total-@item.StockMenuItemId">@item.TotalPrice.ToString("0.00")</span>
+                                        </td>
+
+                                        <!-- Remove Button -->
+                                        <td class="text-center" style="vertical-align: middle;">
+                                            <a asp-action="RemoveFromCart" asp-route-id="@item.StockMenuItemId" class="btn btn-danger btn-sm" title="Remove Item">
+                                                <i class="icofont icofont-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-right"><strong>Grand Total:</strong></td>
+                                    <td colspan="2" style="font-size: 1.2em; color: #e54c2a;">
+                                        <strong>$ <span id="grand-total">@grantTotal.ToString("0.00")</span></strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4 mb-5">
+                        <div class="col-md-6">
+                            <a asp-action="Index" class="btn btn-secondary btn-md btn-block">Continue Shopping</a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="#" class="btn btn-theme btn-md btn-block">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Cart Section End -->
+@section Scripts {
+    <script>
+        function updateQty(itemId, change) {
+            $.ajax({
+                url: '@Url.Action("UpdateQuantityAjax", "Home")',
+                type: 'POST',
+                data: { id: itemId, change: change },
+                success: function (response) {
+                    if (response.success) {
+                        if (response.isRemoved) {
+                            // If quantity is 0, remove the row with animation
+                            $('#row-' + itemId).fadeOut(300, function() { $(this).remove(); });
+                        } else {
+                            // Update the quantity input box
+                            $('#qty-' + itemId).val(response.newQty);
+                            // Update the specific item total
+                            $('#total-' + itemId).text(response.itemTotal.toFixed(2));
+                        }
+                        // Update the Grand Total at the bottom
+                        $('#grand-total').text(response.grandTotal.toFixed(2));
+                    } else {
+                        alert("Error updating cart.");
+                    }
+                },
+                error: function () {
+                    alert("Error communicating with server.");
+                }
+            });
+        }
+    </script>
+}

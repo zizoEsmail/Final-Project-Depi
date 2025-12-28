@@ -17,6 +17,10 @@ public partial class ProPizzResturentandDrinkDbContext : DbContext
 
     public virtual DbSet<AddressTypeTable> AddressTypeTables { get; set; }
 
+    public virtual DbSet<CartDetailTable> CartDetailTables { get; set; }
+
+    public virtual DbSet<CartTable> CartTables { get; set; }
+
     public virtual DbSet<DiscountTable> DiscountTables { get; set; }
 
     public virtual DbSet<GenderTable> GenderTables { get; set; }
@@ -52,6 +56,8 @@ public partial class ProPizzResturentandDrinkDbContext : DbContext
     public virtual DbSet<UserAddressTable> UserAddressTables { get; set; }
 
     public virtual DbSet<UserDetailTable> UserDetailTables { get; set; }
+    
+    public virtual DbSet<UserPasswordRecoveryTable> UserPasswordRecoveryTables { get; set; }
 
     public virtual DbSet<UserStatusTable> UserStatusTables { get; set; }
 

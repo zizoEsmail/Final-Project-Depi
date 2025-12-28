@@ -4,7 +4,6 @@
 }
 
 <!-- ================= BANNER SECTION ================= -->
-<!-- This div pushes the content down so it doesn't hide behind the navbar -->
 <section class="banner-1" style="background: url('/assets/images/background/banner-1.jpg'); padding-top: 150px; padding-bottom: 100px; background-size: cover;">
     <div class="container">
         <div class="row">
@@ -28,7 +27,6 @@
                     <button class="btn btn-danger filter-button active" data-filter="all">All</button>
                     @foreach (var cat in Model.Categories)
                     {
-                        <!-- We remove spaces from category names for CSS classes (e.g. "Soft Drinks" -> "SoftDrinks") -->
                         <button class="btn btn-warning filter-button" data-filter="@cat.StockMenuCategory.Replace(" ", "")">
                             @cat.StockMenuCategory
                         </button>
@@ -43,18 +41,19 @@
         <div class="row">
             @foreach (var item in Model.Items)
             {
-                <!-- FILTER CLASS: We use the category name here -->
                 <div class="col-md-4 col-sm-6 pb-4 filter @item.StockMenuCategory.StockMenuCategory.Replace(" ", "")">
                     <div class="box">
-                        <!-- IMAGE -->
-                        <!-- We check if the path starts with ~ or not to avoid double slashes -->
+                        <!-- IMAGE FIX: -->
                         @{
                             var imgPath = item.StockItem.ItemPhotoPath;
-                            if (!string.IsNullOrEmpty(imgPath) && !imgPath.StartsWith("~/"))
+                            // Ensure path starts with / so it is absolute from the root
+                            if (!string.IsNullOrEmpty(imgPath) && !imgPath.StartsWith("/") && !imgPath.StartsWith("~"))
                             {
-                                imgPath = "~/images/" + imgPath;
+                                imgPath = "/" + imgPath;
                             }
                         }
+
+                        <!-- Directly use the path. Url.Content is usually for ~/ paths. -->
                         <img src="@Url.Content(imgPath)" class="img-fluid" style="height: 250px; width: 100%; object-fit: cover;" alt="Food Image">
 
                         <div class="caption text-center">
@@ -68,7 +67,7 @@
 
                             <p>@item.StockItem.ItemSize</p>
 
-                            <a href="#" class="btn btn-primary">Add to Cart</a>
+                            <a asp-controller="Home" asp-action="AddToCart" asp-route-id="@item.StockMenuItemId" class="btn btn-primary">Add to Cart</a>
                         </div>
                     </div>
                 </div>

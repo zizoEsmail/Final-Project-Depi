@@ -24,8 +24,6 @@ namespace PizzaRestaurantDrink.Controllers
             }
 
             var model = new CRU_UserTypeMV();
-
-            // 1. If ID is present, we are Editing, so fetch that specific record
             if (id.HasValue && id > 0)
             {
                 var editItem = _context.UserTypeTables.Find(id);
@@ -35,10 +33,7 @@ namespace PizzaRestaurantDrink.Controllers
                     model.UserType = editItem.UserType;
                 }
             }
-
-            // 2. Always fetch the list to show the table
             model.listUserType = _context.UserTypeTables.ToList();
-
             return View(model);
         }
 
@@ -52,21 +47,17 @@ namespace PizzaRestaurantDrink.Controllers
 
             if (ModelState.IsValid)
             {
-                // Check if name already exists (excluding current ID if editing)
                 var checkexist = _context.UserTypeTables
                     .FirstOrDefault(u => u.UserType == cRU_UserTypeMV.UserType && u.UserTypeId != cRU_UserTypeMV.UserTypeID);
 
                 if (checkexist == null)
                 {
-                    if (cRU_UserTypeMV.UserTypeID == 0) // CREATE
+                    if (cRU_UserTypeMV.UserTypeID == 0)
                     {
-                        var usertype = new UserTypeTable
-                        {
-                            UserType = cRU_UserTypeMV.UserType
-                        };
+                        var usertype = new UserTypeTable { UserType = cRU_UserTypeMV.UserType };
                         _context.UserTypeTables.Add(usertype);
                     }
-                    else // UPDATE
+                    else
                     {
                         var usertype = _context.UserTypeTables.Find(cRU_UserTypeMV.UserTypeID);
                         if (usertype != null)
@@ -83,8 +74,6 @@ namespace PizzaRestaurantDrink.Controllers
                     ModelState.AddModelError("UserType", "Already Exists!");
                 }
             }
-
-            // Refill list if returning with error
             cRU_UserTypeMV.listUserType = _context.UserTypeTables.ToList();
             return View(cRU_UserTypeMV);
         }
@@ -98,7 +87,6 @@ namespace PizzaRestaurantDrink.Controllers
             }
 
             var model = new CRU_GenderMV();
-
             if (id.HasValue && id > 0)
             {
                 var item = _context.GenderTables.Find(id);
@@ -127,12 +115,12 @@ namespace PizzaRestaurantDrink.Controllers
 
                 if (checkexist == null)
                 {
-                    if (cRU_GenderMV.GenderID == 0) // CREATE
+                    if (cRU_GenderMV.GenderID == 0)
                     {
                         var gender = new GenderTable { GenderTitle = cRU_GenderMV.GenderTitle };
                         _context.GenderTables.Add(gender);
                     }
-                    else // UPDATE
+                    else
                     {
                         var gender = _context.GenderTables.Find(cRU_GenderMV.GenderID);
                         if (gender != null)
@@ -289,9 +277,7 @@ namespace PizzaRestaurantDrink.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Get Current User ID from Session
             int userid = HttpContext.Session.GetInt32("UserID") ?? 0;
-
             var model = new CRU_UserAddressMV();
 
             if (id.HasValue && id > 0)
@@ -302,11 +288,10 @@ namespace PizzaRestaurantDrink.Controllers
                     model.UserAddressID = item.UserAddressId;
                     model.AddressTypeID = item.AddressTypeId;
                     model.FullAddress = item.FullAddress;
-                    model.VisibleStatusID = item.VisibleStatusId;
+                    model.VisibleStatusID = item.VisibleStatusId; // FIXED: No '?? 0' needed
                 }
             }
 
-            // Only show addresses belonging to this user
             model.listUserAddress = _context.UserAddressTables
                 .Include(u => u.AddressType)
                 .Include(u => u.VisibleStatus)
@@ -347,7 +332,7 @@ namespace PizzaRestaurantDrink.Controllers
                             AddressTypeId = cRU_UserAddressMV.AddressTypeID,
                             FullAddress = cRU_UserAddressMV.FullAddress,
                             VisibleStatusId = cRU_UserAddressMV.VisibleStatusID,
-                            CreatedByUserId = userid // Note: Fixed naming based on scaffold
+                            CreatedByUserId = userid // Verified: This is correct
                         };
                         _context.UserAddressTables.Add(newaddress);
                     }
@@ -371,7 +356,6 @@ namespace PizzaRestaurantDrink.Controllers
                 }
             }
 
-            // Reload Lists if error
             cRU_UserAddressMV.listUserAddress = _context.UserAddressTables
                 .Include(u => u.AddressType)
                 .Include(u => u.VisibleStatus)

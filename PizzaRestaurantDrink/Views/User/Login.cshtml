@@ -58,11 +58,9 @@
                                     <span asp-validation-for="Password" class="text-danger"></span>
                                 </div>
 
-                                <!-- Forgot Password Link -->
-                                <div class="form-group">
-                                    <div class="links">
-                                        <a asp-controller="UserRecovery" asp-action="AccountRecovery" class="float-right">Forgot Password?</a>
-                                    </div>
+                                <!-- Forgot Password Link (FIXED) -->
+                                <div class="form-group text-right">
+                                    <a asp-controller="UserRecovery" asp-action="AccountRecovery">Forgot Password?</a>
                                 </div>
 
                                 <!-- Login Button -->

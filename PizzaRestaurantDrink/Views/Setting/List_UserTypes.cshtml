@@ -1,0 +1,99 @@
+﻿@model PizzaRestaurantDrink.ViewModels.CRU_UserTypeMV
+@{
+    ViewData["Title"] = "User Types";
+}
+
+<!-- Breadcrumb Start -->
+<div class="bread-crumb">
+    <div class="container">
+        <div class="matter">
+            <h2>User Types</h2>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a asp-controller="Home" asp-action="Index">HOME</a></li>
+                <li class="list-inline-item"><a asp-controller="Setting" asp-action="List_UserTypes">User Types</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<div class="contactus">
+    <div class="container">
+        <div class="row">
+            <!-- Title Content Start -->
+            <div class="col-sm-12 commontop text-center">
+                <h4>User Types</h4>
+                <div class="divider style-1 center">
+                    <span class="hr-simple left"></span>
+                    <i class="icofont icofont-ui-press hr-icon"></i>
+                    <span class="hr-simple right"></span>
+                </div>
+            </div>
+            <!-- Title Content End -->
+
+            <div class="col-md-5 col-12">
+                <!--  Form Start  -->
+                <form asp-action="List_UserTypes" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="UserTypeID" />
+
+                    <div class="form-group row">
+                        <div class="col-md-12 col-sm-12 col-12">
+                            <i class="icofont icofont-ui-user"></i>
+                            <input asp-for="UserType" class="form-control" placeholder="Enter User Type" />
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        @if (Model.UserTypeID == 0)
+                        {
+                            <input class="btn btn-theme btn-md btn-wide" style="float:right;" type="submit" value="Create" />
+                        }
+                        else
+                        {
+                            <input class="btn btn-theme btn-md btn-wide" style="float:right;" type="submit" value="Update" />
+                        }
+                    </div>
+                </form>
+                <!--  Form End  -->
+            </div>
+
+            <div class="col-md-7 col-12">
+                <!--  List Start  -->
+                <div class="table-responsive-md">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <td class="text-center">
+                                    <label>User Type</label>
+                                </td>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.listUserType != null)
+                            {
+                                foreach (var item in Model.listUserType)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.UserType
+                                        </td>
+                                        <td>
+                                            <a asp-action="List_UserTypes" asp-route-id="@item.UserTypeId" class="btn btn-theme btn-md btn-wide">Edit</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!--  List End  -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
