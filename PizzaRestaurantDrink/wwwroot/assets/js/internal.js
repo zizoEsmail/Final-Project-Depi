@@ -222,5 +222,18 @@ function initReservationForm()
                     }, 3000);
                 });
     });
+
+    $(document).ready(function () {
+        // Check if the notification element exists on the page
+        if ($("#order-notification").length) {
+            // Fade it in
+            $("#order-notification").fadeIn();
+
+            // Wait 5 seconds, then fade it out
+            setTimeout(function () {
+                $("#order-notification").fadeOut();
+            }, 5000);
+        }
+    });
 }
 /*Function for Reservation form End */

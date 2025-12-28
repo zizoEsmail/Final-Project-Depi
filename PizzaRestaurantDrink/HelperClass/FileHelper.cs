@@ -1,6 +1,9 @@
-﻿namespace PizzaRestaurantDrink.HelperClass
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+
+namespace PizzaRestaurantDrink.HelperClass
 {
-    // Interface to allow Injection
     public interface IFileHelper
     {
         bool UploadPhoto(IFormFile file, string folder, string name);
@@ -23,13 +26,18 @@
             }
             try
             {
-                // In Core, we point to the wwwroot folder
                 string webRootPath = _env.WebRootPath;
+                string path = Path.Combine(webRootPath, folder);
 
-                // Combine wwwroot + folder + filename
-                string path = Path.Combine(webRootPath, folder, name);
+                // FIX: Create directory if it does not exist
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
 
-                using (var stream = new FileStream(path, FileMode.Create))
+                string filePath = Path.Combine(path, name);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     file.CopyTo(stream);
                 }

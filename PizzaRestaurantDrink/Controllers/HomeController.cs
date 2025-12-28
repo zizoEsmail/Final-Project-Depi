@@ -231,6 +231,148 @@ namespace PizzaRestaurantDrink.Controllers
             return RedirectToAction("Cart");
         }
 
+        // ==========================================
+        // CHECKOUT PAGE
+        // ==========================================
+        public IActionResult Checkout()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserID");
+            if (userId == null) return RedirectToAction("Login", "User");
+
+            var viewModel = new CheckoutViewModel();
+            viewModel.OrderTime = DateTime.Now;
+            viewModel.ExpectedTime = DateTime.Now.AddMinutes(40);
+
+            // 1. Get User Details
+            var user = _context.UserTables
+                .Include(u => u.UserAddressTables)
+                .ThenInclude(ua => ua.AddressType) // Assuming you might check type later
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user != null)
+            {
+                viewModel.FullName = (user.FirstName + " " + user.LastName).Trim();
+                viewModel.PhoneNumber = user.ContactNo;
+
+                // Get the most recent address (or default logic)
+                var address = user.UserAddressTables.FirstOrDefault();
+                if (address != null)
+                {
+                    viewModel.Address = address.FullAddress;
+                    viewModel.AddressId = address.UserAddressId;
+                }
+            }
+
+            // 2. Get Cart Items
+            var cart = _context.CartTables.FirstOrDefault(c => c.UserId == userId);
+            if (cart != null)
+            {
+                viewModel.CartItems = _context.CartDetailTables
+                    .Where(cd => cd.CartId == cart.CartId)
+                    .Include(cd => cd.StockMenuItem)
+                    .ThenInclude(smi => smi.StockItem)
+                    .Select(cd => new CartItemViewModel
+                    {
+                        StockMenuItemId = cd.StockMenuItemId,
+                        Quantity = cd.Quantity,
+                        ItemTitle = cd.StockMenuItem.StockItem.StockItemTitle,
+                        UnitPrice = (decimal)(cd.StockMenuItem.StockItem.UnitPrice ?? 0),
+                        PhotoPath = cd.StockMenuItem.StockItem.ItemPhotoPath
+                    }).ToList();
+
+                viewModel.SubTotal = viewModel.CartItems.Sum(x => x.TotalPrice);
+            }
+            else
+            {
+                viewModel.CartItems = new List<CartItemViewModel>();
+            }
+
+            return View(viewModel);
+        }
+
+        // ==========================================
+        // PLACE ORDER
+        // ==========================================
+        [HttpPost]
+        public IActionResult PlaceOrder()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserID");
+            if (userId == null) return RedirectToAction("Login", "User");
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // 1. Get Cart Data
+                    var cart = _context.CartTables
+                        .Include(c => c.CartDetails)
+                        .ThenInclude(cd => cd.StockMenuItem)
+                        .ThenInclude(smi => smi.StockItem)
+                        .FirstOrDefault(c => c.UserId == userId);
+
+                    if (cart == null || !cart.CartDetails.Any())
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    // 2. Get User Info for the Order Header
+                    var user = _context.UserTables.Include(u => u.UserAddressTables).FirstOrDefault(u => u.UserId == userId);
+                    var address = user.UserAddressTables.FirstOrDefault();
+
+                    if (user == null || address == null) return RedirectToAction("Checkout"); // Validation fail
+
+                    // 3. Create Order Header
+                    var newOrder = new OrderTable
+                    {
+                        OrderByUserId = userId,
+                        OrderDateTime = DateTime.Now,
+                        OrderTypeId = 1, // Assuming 1 = Delivery
+                        OrderStatusId = 1, // Assuming 1 = Pending/Received
+                        DeliveryAddressUserAddressId = address.UserAddressId,
+                        OrderReceivedByFullName = (user.FirstName + " " + user.LastName).Trim(),
+                        OrderReceivedByContactNo = user.ContactNo,
+                        Description = "Order placed via Website"
+                    };
+
+                    _context.OrderTables.Add(newOrder);
+                    _context.SaveChanges(); // Save to get the OrderId
+
+                    // 4. Create Order Details (Items)
+                    foreach (var cartItem in cart.CartDetails)
+                    {
+                        var orderItem = new OrderItemDetailTable
+                        {
+                            OrderId = newOrder.OrderId,
+                            StockItemId = cartItem.StockMenuItem.StockItemId, // Link to the raw stock item
+                            Qty = cartItem.Quantity,
+                            UnitPrice = (double)(cartItem.StockMenuItem.StockItem.UnitPrice ?? 0),
+                            DiscountAmount = 0
+                        };
+                        _context.OrderItemDetailTables.Add(orderItem);
+                    }
+                    _context.SaveChanges();
+
+                    // 5. Delete Cart
+                    _context.CartTables.Remove(cart); // Cascading delete will handle details usually, or remove details first
+                    _context.SaveChanges();
+
+                    transaction.Commit();
+
+                    // 6. Set Success Notification
+                    TempData["SuccessMessage"] = "Order Placed Successfully! Reference #" + newOrder.OrderId;
+
+                    // Redirect to Home (or Order History if you prefer)
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    // Log error
+                    return RedirectToAction("Checkout");
+                }
+            }
+        }
+
         public IActionResult Privacy()
         {
             return View();

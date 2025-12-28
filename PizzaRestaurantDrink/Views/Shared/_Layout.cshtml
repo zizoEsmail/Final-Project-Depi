@@ -25,6 +25,19 @@
 </head>
 <body class="">
     <div class="wrapper">
+
+        <!-- ========================================== -->
+        <!-- NEW: GLOBAL SUCCESS NOTIFICATION           -->
+        <!-- ========================================== -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="order-notification" class="alert alert-success shadow">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="icofont icofont-check-circled" style="font-size: 1.3em; vertical-align: middle; margin-right: 10px;"></i>
+                <span style="vertical-align: middle;"><strong>Success!</strong> @TempData["SuccessMessage"]</span>
+            </div>
+        }
+
         <!-- Loader Start -->
         <div class="loader">
             <div class="loader-inner">

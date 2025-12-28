@@ -78,12 +78,16 @@
                                                 }
                                                 else
                                                 {
-                                                    // Handle ~ in path
-                                                    var photoPath = Model.ProfileMV.UserPhotoPath.StartsWith("~")
-                                                    ? Url.Content(Model.ProfileMV.UserPhotoPath)
-                                                    : "~/Content/ProfilePhoto/" + Model.ProfileMV.UserPhotoPath;
+                                                    string photoPath = Model.ProfileMV.UserPhotoPath;
 
-                                                    <img class="mr-3" src="@photoPath" style="width:100px; height:150px; object-fit: cover;" alt="User">
+                                                    // FIX: If path doesn't start with "/" and doesn't start with "~", THEN add the folder.
+                                                    // Otherwise, use it as is.
+                                                    if (!photoPath.StartsWith("/") && !photoPath.StartsWith("~"))
+                                                    {
+                                                        photoPath = "~/Content/ProfilePhoto/" + photoPath;
+                                                    }
+
+                                                    <img class="mr-3" src="@Url.Content(photoPath)" style="width:100px; height:150px; object-fit: cover;" alt="User">
                                                 }
 
                                                 <div class="media-body">
@@ -92,6 +96,7 @@
                                                     <p><i class="icofont icofont-phone"></i> @Model.ProfileMV.ContactNo</p>
                                                 </div>
                                             </div>
+
                                             <div class="brief-info-footer" style="background-color: #e54c2a">
                                                 <p style="font-size:medium; text-align:center; color:white;">
                                                     <i class="icofont icofont-ui-user"></i> Account Status: Active
